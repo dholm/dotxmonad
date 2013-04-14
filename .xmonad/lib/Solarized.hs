@@ -1,0 +1,1 @@
+../external/solarized-xmonad/Solarized.hs

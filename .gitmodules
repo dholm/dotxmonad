@@ -1,0 +1,4 @@
+[submodule ".xmonad/external/solarized-xmonad"]
+	path = .xmonad/external/solarized-xmonad
+	url = git://github.com/ibotty/solarized-xmonad.git
+	branch = master
