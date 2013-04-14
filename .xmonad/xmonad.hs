@@ -1,5 +1,4 @@
 import XMonad
-import qualified XMonad.StackSet as W
 
 import XMonad.Actions.FloatKeys
 
@@ -9,6 +8,13 @@ import XMonad.Hooks.DynamicLog
 import XMonad.Hooks.ManageDocks
 
 import XMonad.Layout.IM
+import XMonad.Layout.Mosaic
+import XMonad.Layout.NoBorders
+import XMonad.Layout.PerWorkspace
+import XMonad.Layout.ResizableTile
+import XMonad.Layout.ToggleLayouts
+
+import qualified XMonad.StackSet as W
 
 import XMonad.Util.EZConfig
 import XMonad.Util.Run (spawnPipe)
@@ -18,24 +24,73 @@ import Solarized
 import System.IO
 
 
-main = do
-  xmproc <- spawnPipe "xmobar $HOME/.xmonad/xmobar.hs"
-  xmonad $ gnomeConfig
-                      { normalBorderColor = solarizedBase01
-                      , focusedBorderColor = solarizedRed
-                      , workspaces = myWorkspaces
-                      , modMask = mod4Mask
-                      , terminal = myTerminal
-                      , manageHook = manageDocks <+> manageHook defaultConfig
-                      , layoutHook = avoidStruts $ layoutHook defaultConfig
-                      , logHook = dynamicLogWithPP myXmobarPP
-                                                           { ppOutput = hPutStrLn xmproc
-                                                           , ppTitle = xmobarColor solarizedBase0 solarizedBase03 . shorten 50
-                                                           }
-                      }
-                      `additionalKeysP` myKeys
-
+myBaseConfig = gnomeConfig
 myTerminal = "gnome-terminal"
+myWorkspaces = [ "1:info", "2:mail", "3:comm", "4:term", "5", "6", "7", "8:tsrv", "9:scratch" ]
+myNormalBorderColor = solarizedBase01
+myFocusedBorderColor = solarizedRed
+
+myKeys =
+  [ -- Launching and managing applications
+    ("M-S-q", spawn "gnome-session-quit --logout --no-prompt")
+  , ("M-S-l", spawn "gnome-screensaver-command -l")
+  , ("M-<Space>", spawn "dmenu_run")
+  , ("M-s", scratchpadSpawnActionCustom "gnome-terminal --disable-factory --name scratchpad")
+  , ("M-q", spawn "xmonad --recompile && xmonad --restart")
+
+    -- Modifying the layout
+  , ("M-S-<Space>", sendMessage NextLayout)
+  , ("M-t", withFocused $ windows . W.sink)
+  , ("M-,", sendMessage (IncMasterN 1))
+  , ("M-.", sendMessage (IncMasterN (-1)))
+  , ("M-b", sendMessage $ ToggleStruts)
+
+    -- Changing focus
+  , ("M-m", windows W.focusMaster)
+  , ("M-j", windows W.focusDown)
+  , ("M-k", windows W.focusUp)
+
+    -- Changing the window order
+  , ("M-S-m", windows W.swapMaster)
+  , ("M-S-j", windows W.swapDown)
+  , ("M-S-k", windows W.swapUp)
+
+    -- Resizing the master/slave ratio
+  , ("M-h", sendMessage Shrink)
+  , ("M-l", sendMessage Expand)
+
+    -- Refresh the screen
+  , ("M-r", rescreen)
+  ]
+  ++
+  -- Managing workspaces
+  [ (mask ++ "M-" ++ [key], windows $ f i)
+    | (i, key) <- zip myWorkspaces ['1' .. '9']
+    , (f, mask) <- [ (W.greedyView, ""), (W.shift, "S-") ]
+  ]
+  ++
+  -- Managing physical screens
+  [ (mask ++ "M-" ++ [key], screenWorkspace scr >>= flip whenJust (windows . action))
+    | (key, scr) <- zip "wer" [1, 2, 3]
+    , (action, mask) <- [ (W.view, ""), (W.shift, "S-") ]
+  ]
+
+myLayoutHook = onWorkspace "4:term" htiled $
+               onWorkspace "3:comm" htiled $
+               onWorkspace "8:tsrv" (noBorders Full) $
+               avoidStruts $ toggleLayouts (noBorders Full)
+               ( Full ||| tiled ||| mosaic 2 [3,2] ||| Mirror tiled)
+               where
+                 tiled = ResizableTall nmaster delta ratio []
+                 htiled = avoidStruts $ Tall hmaster delta ratio
+                 hmaster = 8
+                 nmaster = 1
+                 delta = 2 / 100
+                 ratio = 1 / 2
+
+myManageHook = composeAll
+               [ className =? "Pidgin" --> doF (W.shift "3:comm")
+               ]
 
 myXmobarPP = defaultPP { ppCurrent = xmobarColor solarizedBlue "" . wrap "[" "]"
                        , ppTitle = xmobarColor solarizedBase1 "" . shorten 40
@@ -43,22 +98,21 @@ myXmobarPP = defaultPP { ppCurrent = xmobarColor solarizedBlue "" . wrap "[" "]"
                        , ppUrgent = xmobarColor solarizedRed solarizedBase02
                        }
 
-myWorkspaces =
-  [ "1:info"
-  , "2:comm"
-  , "3:term"
-  , "4"
-  , "5"
-  , "6"
-  , "7"
-  , "8:tsrv"
-  , "9:scratch"
-  ]
-
-myKeys =
-  [ ("M-S-q", spawn "gnome-session-quit --logout --no-prompt")
-  , ("M-S-l", spawn "gnome-screensaver-command -l")
-  , ("M-S-<Space>", spawn "dmenu_run")
-  , ("M-t", withFocused $ windows . W.sink)
-  , ("M-s", scratchpadSpawnActionCustom "gnome-terminal --disable-factory --name scratchpad")
-  ]
+main = do
+  xmproc <- spawnPipe "xmobar $HOME/.xmonad/xmobar.hs"
+  xmonad $ myBaseConfig
+                      { normalBorderColor = myNormalBorderColor
+                      , focusedBorderColor = myFocusedBorderColor
+                      , layoutHook = myLayoutHook
+                      , workspaces = myWorkspaces
+                      , modMask = mod4Mask
+                      , terminal = myTerminal
+                      , manageHook = manageDocks <+> myManageHook
+                                     <+> manageHook myBaseConfig
+                      , logHook = dynamicLogWithPP myXmobarPP
+                                                           { ppOutput = hPutStrLn xmproc
+                                                           , ppTitle = xmobarColor solarizedBase0 solarizedBase03 . shorten 50
+                                                           }
+                      , focusFollowsMouse = True
+                      }
+                      `additionalKeysP` myKeys
