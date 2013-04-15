@@ -28,6 +28,7 @@ import System.IO
 
 myBaseConfig = gnomeConfig
 myTerminal = "gnome-terminal"
+myTray = "trayer --edge top --align right --SetDockType true --SetPartialStrut false --expand true --widthtype percent --width 15 --transparent true --tint 0x002b36 --height 19"
 myWorkspaces = [ "1:info", "2:mail", "3:comm", "4:term", "5", "6", "7", "8:tsrv", "9:scratch" ]
 myNormalBorderColor = solarizedBase01
 myFocusedBorderColor = solarizedRed
@@ -104,7 +105,7 @@ myXmobarPP = defaultPP { ppCurrent = xmobarColor solarizedBlue "" . wrap "[" "]"
 
 main = do
   xmproc <- spawnPipe "xmobar $HOME/.xmonad/xmobar.hs"
-  spawn "trayer --edge top --align right --SetDockType true --SetPartialStrut false --expand true --width 20 --transparent true --tint 0x002b36 --height 12"
+  spawn myTray
   xmonad $ myBaseConfig
                       { normalBorderColor = myNormalBorderColor
                       , focusedBorderColor = myFocusedBorderColor

@@ -1,11 +1,7 @@
 Config { font = "xft:Monospace:size=9:bold:antialias=true"
        , bgColor = "#002b36"
        , fgColor = "#839496"
-       , position = Static { xpos = 0
-                           , ypos = 0
-                           , width = 1290
-                           , height = 16
-                           }
+       , position = TopW L 85
        , commands = [ Run MultiCpu [ "-t", "Cpu: <total>%", "-L", "3", "-H", "50", "--normal", "#93a1a1", "--high", "#dc322f" ] 10
                     , Run Memory [ "-t", "Mem: <usedratio>%", "--normal", "#93a1a1", "--high", "#dc322f" ] 10
                     , Run Swap [ "-t", "Swap: <usedratio>%", "-H", "1024", "-L", "512", "--normal", "#93a1a1", "--high", "#dc322f" ] 10
