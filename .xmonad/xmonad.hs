@@ -7,11 +7,13 @@ import XMonad.Config.Gnome
 import XMonad.Hooks.DynamicLog
 import XMonad.Hooks.ManageDocks
 
+import XMonad.Layout.Grid
 import XMonad.Layout.IM
 import XMonad.Layout.Mosaic
 import XMonad.Layout.NoBorders
 import XMonad.Layout.PerWorkspace
 import XMonad.Layout.ResizableTile
+import XMonad.Layout.Spacing
 import XMonad.Layout.ToggleLayouts
 
 import qualified XMonad.StackSet as W
@@ -36,7 +38,7 @@ myKeys =
   , ("M-S-l", spawn "gnome-screensaver-command -l")
   , ("M-<Space>", spawn "dmenu_run")
   , ("M-s", scratchpadSpawnActionCustom "gnome-terminal --disable-factory --name scratchpad")
-  , ("M-q", spawn "xmonad --recompile && xmonad --restart")
+  , ("M-q", spawn "killall trayer; xmonad --recompile && xmonad --restart")
 
     -- Modifying the layout
   , ("M-S-<Space>", sendMessage NextLayout)
@@ -76,7 +78,7 @@ myKeys =
   ]
 
 myLayoutHook = onWorkspace "4:term" htiled $
-               onWorkspace "3:comm" htiled $
+               onWorkspace "3:comm" pidginLayout $
                onWorkspace "8:tsrv" (noBorders Full) $
                avoidStruts $ toggleLayouts (noBorders Full)
                ( Full ||| tiled ||| mosaic 2 [3,2] ||| Mirror tiled)
@@ -87,19 +89,22 @@ myLayoutHook = onWorkspace "4:term" htiled $
                  nmaster = 1
                  delta = 2 / 100
                  ratio = 1 / 2
+                 gridLayout = spacing 8 $ Grid
+                 pidginLayout = withIM (18/100) (Role "buddy_list") gridLayout
 
 myManageHook = composeAll
-               [ className =? "Pidgin" --> doF (W.shift "3:comm")
+               [ className =? "Pidgin" --> doShift "3:comm"
                ]
 
 myXmobarPP = defaultPP { ppCurrent = xmobarColor solarizedBlue "" . wrap "[" "]"
-                       , ppTitle = xmobarColor solarizedBase1 "" . shorten 40
+                       , ppTitle = xmobarColor solarizedBase1 "" . shorten 50
                        , ppVisible = wrap "(" ")"
                        , ppUrgent = xmobarColor solarizedRed solarizedBase02
                        }
 
 main = do
   xmproc <- spawnPipe "xmobar $HOME/.xmonad/xmobar.hs"
+  spawn "trayer --edge top --align right --SetDockType true --SetPartialStrut false --expand true --width 20 --transparent true --tint 0x002b36 --height 12"
   xmonad $ myBaseConfig
                       { normalBorderColor = myNormalBorderColor
                       , focusedBorderColor = myFocusedBorderColor
