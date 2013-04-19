@@ -2,9 +2,10 @@ import XMonad
 
 import XMonad.Actions.FloatKeys
 
-import XMonad.Config.Gnome
+import XMonad.Config.Gnome (gnomeConfig)
 
 import XMonad.Hooks.DynamicLog
+import XMonad.Hooks.EwmhDesktops (ewmh)
 import XMonad.Hooks.ManageDocks
 
 import XMonad.Layout.Grid
@@ -23,12 +24,13 @@ import XMonad.Util.Run (spawnPipe)
 import XMonad.Util.Scratchpad
 
 import Solarized
+
 import System.IO
+import System.Taffybar.Hooks.PagerHints (pagerHints)
 
 
 myBaseConfig = gnomeConfig
 myTerminal = "gnome-terminal"
-myTray = "trayer --edge top --align right --SetDockType true --SetPartialStrut false --expand true --widthtype percent --width 15 --transparent true --tint 0x002b36 --height 19"
 myWorkspaces = [ "1:info", "2:mail", "3:comm", "4:term", "5", "6", "7", "8:tsrv", "9:scratch" ]
 myNormalBorderColor = solarizedBase01
 myFocusedBorderColor = solarizedRed
@@ -39,7 +41,7 @@ myKeys =
   , ("M-S-l", spawn "gnome-screensaver-command -l")
   , ("M-<Space>", spawn "dmenu_run")
   , ("M-s", scratchpadSpawnActionCustom "gnome-terminal --disable-factory --name scratchpad")
-  , ("M-q", spawn "killall trayer; xmonad --recompile && xmonad --restart")
+  , ("M-q", spawn "killall -9 taffybar-linux-x86_64; xmonad --recompile && xmonad --restart")
 
     -- Modifying the layout
   , ("M-S-<Space>", sendMessage NextLayout)
@@ -104,9 +106,8 @@ myXmobarPP = defaultPP { ppCurrent = xmobarColor solarizedBlue "" . wrap "[" "]"
                        }
 
 main = do
-  xmproc <- spawnPipe "xmobar $HOME/.xmonad/xmobar.hs"
-  spawn myTray
-  xmonad $ myBaseConfig
+  xmproc <- spawnPipe "taffybar"
+  xmonad . ewmh . pagerHints $ myBaseConfig
                       { normalBorderColor = myNormalBorderColor
                       , focusedBorderColor = myFocusedBorderColor
                       , layoutHook = myLayoutHook
