@@ -106,8 +106,8 @@ myXmobarPP = defaultPP { ppCurrent = xmobarColor solarizedBlue "" . wrap "[" "]"
                        }
 
 main = do
-  xmproc <- spawnPipe "taffybar"
-  xmonad . ewmh . pagerHints $ myBaseConfig
+  xmproc <- spawn "taffybar"
+  xmonad . pagerHints . ewmh $ myBaseConfig
                       { normalBorderColor = myNormalBorderColor
                       , focusedBorderColor = myFocusedBorderColor
                       , layoutHook = myLayoutHook
@@ -117,8 +117,7 @@ main = do
                       , manageHook = manageDocks <+> myManageHook
                                      <+> manageHook myBaseConfig
                       , logHook = dynamicLogWithPP myXmobarPP
-                                                           { ppOutput = hPutStrLn xmproc
-                                                           , ppTitle = xmobarColor solarizedBase0 solarizedBase03 . shorten 50
+                                                           { ppTitle = xmobarColor solarizedBase0 solarizedBase03 . shorten 50
                                                            }
                       , focusFollowsMouse = True
                       }
