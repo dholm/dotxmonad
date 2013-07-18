@@ -1,6 +1,7 @@
 import XMonad
 
 import XMonad.Actions.FloatKeys
+import XMonad.Actions.GridSelect
 
 import XMonad.Config.Gnome (gnomeConfig)
 
@@ -42,6 +43,7 @@ myKeys =
   , ("M-<Space>", spawn "dmenu_run")
   , ("M-s", scratchpadSpawnActionCustom "gnome-terminal --disable-factory --name scratchpad")
   , ("M-q", spawn "killall -9 taffybar-linux-x86_64; xmonad --recompile && xmonad --restart")
+  , ("M-<Tab>", goToSelected defaultGSConfig)
 
     -- Modifying the layout
   , ("M-S-<Space>", sendMessage NextLayout)
