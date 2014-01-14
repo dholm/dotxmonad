@@ -68,6 +68,9 @@ myKeys =
 
     -- Refresh the screen
   , ("M-r", rescreen)
+
+    -- Manage video output
+  , ("<XF86LaunchA>", spawn "disper --cycle-stages \"-S:-c:-s:-e\" -C")
   ]
   ++
   -- Managing workspaces
