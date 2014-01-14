@@ -6,7 +6,7 @@ import XMonad.Actions.GridSelect
 import XMonad.Config.Gnome (gnomeConfig)
 
 import XMonad.Hooks.DynamicLog
-import XMonad.Hooks.EwmhDesktops (ewmh)
+import XMonad.Hooks.EwmhDesktops
 import XMonad.Hooks.ManageDocks
 
 import XMonad.Layout.Grid
@@ -116,6 +116,7 @@ main = do
                       , workspaces = myWorkspaces
                       , modMask = mod4Mask
                       , terminal = myTerminal
+                      , handleEventHook = fullscreenEventHook
                       , manageHook = manageDocks <+> myManageHook
                                      <+> manageHook myBaseConfig
                       , logHook = dynamicLogWithPP myXmobarPP
