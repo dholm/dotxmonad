@@ -1,3 +1,10 @@
+import Solarized
+
+import System.IO
+import System.Taffybar.Hooks.PagerHints (pagerHints)
+
+import Text.Printf
+
 import XMonad
 
 import XMonad.Actions.FloatKeys
@@ -24,17 +31,16 @@ import XMonad.Util.EZConfig
 import XMonad.Util.Run (spawnPipe)
 import XMonad.Util.Scratchpad
 
-import Solarized
-
-import System.IO
-import System.Taffybar.Hooks.PagerHints (pagerHints)
-
 
 myBaseConfig = gnomeConfig
 myTerminal = "gnome-terminal"
 myWorkspaces = [ "1:info", "2:mail", "3:comm", "4:term", "5", "6", "7", "8:tsrv", "9:scratch" ]
 myNormalBorderColor = solarizedBase01
 myFocusedBorderColor = solarizedRed
+
+mpris_play = "dbus-send --print-reply --dest=org.mpris.MediaPlayer2.%s /org/mpris/MediaPlayer2 org.mpris.MediaPlayer2.Player.PlayPause"
+mpris_prev = "dbus-send --print-reply --dest=org.mpris.MediaPlayer2.%s /org/mpris/MediaPlayer2 org.mpris.MediaPlayer2.Player.Previous"
+mpris_next = "dbus-send --print-reply --dest=org.mpris.MediaPlayer2.%s /org/mpris/MediaPlayer2 org.mpris.MediaPlayer2.Player.Next"
 
 myKeys =
   [ -- Launching and managing applications
@@ -71,6 +77,14 @@ myKeys =
 
     -- Manage video output
   , ("<XF86LaunchA>", spawn "disper --cycle-stages \"-S:-c:-s:-e\" -C")
+
+    -- Multimedia keys
+  , ("<XF86AudioMute>", spawn "amixer -q -D pulse set Master toggle")
+  , ("<XF86AudioLowerVolume>", spawn "amixer -q set Master 2dB- unmute")
+  , ("<XF86AudioRaiseVolume>", spawn "amixer -q set Master 2dB+ unmute")
+  , ("<XF86AudioPlay>", spawn (printf mpris_play "mopidy"))
+  , ("<XF86AudioPrev>", spawn (printf mpris_prev "mopidy"))
+  , ("<XF86AudioNext>", spawn (printf mpris_next "mopidy"))
   ]
   ++
   -- Managing workspaces
