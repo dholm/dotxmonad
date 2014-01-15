@@ -39,7 +39,7 @@ myFocusedBorderColor = solarizedRed
 myKeys =
   [ -- Launching and managing applications
     ("M-S-q", spawn "gnome-session-quit --logout --no-prompt")
-  , ("M-S-l", spawn "gnome-screensaver-command -l")
+  , ("M-S-l", spawn "xscreensaver-command -lock")
   , ("M-<Space>", spawn "dmenu_run")
   , ("M-s", scratchpadSpawnActionCustom "gnome-terminal --disable-factory --name scratchpad")
   , ("M-q", spawn "killall -9 taffybar-linux-x86_64; xmonad --recompile && xmonad --restart")
@@ -128,3 +128,7 @@ main = do
                       , focusFollowsMouse = True
                       }
                       `additionalKeysP` myKeys
+
+startup :: X ()
+startup = do
+  spawn "xscreensaver -no-splash"
