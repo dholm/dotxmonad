@@ -38,9 +38,9 @@ myWorkspaces = [ "1:info", "2:mail", "3:comm", "4:term", "5", "6", "7", "8:tsrv"
 myNormalBorderColor = solarizedBase01
 myFocusedBorderColor = solarizedRed
 
-mpris_play = "dbus-send --print-reply --dest=org.mpris.MediaPlayer2.%s /org/mpris/MediaPlayer2 org.mpris.MediaPlayer2.Player.PlayPause"
-mpris_prev = "dbus-send --print-reply --dest=org.mpris.MediaPlayer2.%s /org/mpris/MediaPlayer2 org.mpris.MediaPlayer2.Player.Previous"
-mpris_next = "dbus-send --print-reply --dest=org.mpris.MediaPlayer2.%s /org/mpris/MediaPlayer2 org.mpris.MediaPlayer2.Player.Next"
+mprisPlay = "dbus-send --print-reply --dest=org.mpris.MediaPlayer2.%s /org/mpris/MediaPlayer2 org.mpris.MediaPlayer2.Player.PlayPause"
+mprisPrev = "dbus-send --print-reply --dest=org.mpris.MediaPlayer2.%s /org/mpris/MediaPlayer2 org.mpris.MediaPlayer2.Player.Previous"
+mprisNext = "dbus-send --print-reply --dest=org.mpris.MediaPlayer2.%s /org/mpris/MediaPlayer2 org.mpris.MediaPlayer2.Player.Next"
 
 myKeys =
   [ -- Launching and managing applications
@@ -56,7 +56,7 @@ myKeys =
   , ("M-t", withFocused $ windows . W.sink)
   , ("M-,", sendMessage (IncMasterN 1))
   , ("M-.", sendMessage (IncMasterN (-1)))
-  , ("M-b", sendMessage $ ToggleStruts)
+  , ("M-b", sendMessage ToggleStruts)
 
     -- Changing focus
   , ("M-m", windows W.focusMaster)
@@ -82,9 +82,9 @@ myKeys =
   , ("<XF86AudioMute>", spawn "amixer -q -D pulse set Master toggle")
   , ("<XF86AudioLowerVolume>", spawn "amixer -q set Master 2dB- unmute")
   , ("<XF86AudioRaiseVolume>", spawn "amixer -q set Master 2dB+ unmute")
-  , ("<XF86AudioPlay>", spawn (printf mpris_play "mopidy"))
-  , ("<XF86AudioPrev>", spawn (printf mpris_prev "mopidy"))
-  , ("<XF86AudioNext>", spawn (printf mpris_next "mopidy"))
+  , ("<XF86AudioPlay>", spawn (printf mprisPlay "mopidy"))
+  , ("<XF86AudioPrev>", spawn (printf mprisPrev "mopidy"))
+  , ("<XF86AudioNext>", spawn (printf mprisNext "mopidy"))
   ]
   ++
   -- Managing workspaces
@@ -111,7 +111,7 @@ myLayoutHook = onWorkspace "4:term" htiled $
                  nmaster = 1
                  delta = 2 / 100
                  ratio = 1 / 2
-                 gridLayout = spacing 8 $ Grid
+                 gridLayout = spacing 8 Grid
                  pidginLayout = withIM (18/100) (Role "buddy_list") gridLayout
 
 myManageHook = composeAll
@@ -144,5 +144,4 @@ main = do
                       `additionalKeysP` myKeys
 
 startup :: X ()
-startup = do
-  spawn "xscreensaver -no-splash"
+startup = spawn "xscreensaver -no-splash"
