@@ -46,7 +46,8 @@ myKeys =
   [ -- Launching and managing applications
     ("M-S-q", spawn "gnome-session-quit --logout --no-prompt")
   , ("M-S-l", spawn "xscreensaver-command -lock")
-  , ("M-<Space>", spawn "dmenu_run")
+  , ("M-<Space>", spawn "gmrun")
+  , ("M-S-<Space>", spawn "dmenu_run")
   , ("M-s", scratchpadSpawnActionCustom "gnome-terminal --disable-factory --name scratchpad")
   , ("M-q", spawn "killall -9 taffybar-linux-x86_64; xmonad --recompile && xmonad --restart")
   , ("M-<Tab>", goToSelected defaultGSConfig)
@@ -62,6 +63,10 @@ myKeys =
   , ("M-m", windows W.focusMaster)
   , ("M-j", windows W.focusDown)
   , ("M-k", windows W.focusUp)
+
+   -- Modifying windows
+  , ("M-c", kill)
+  , ("M-n", refresh)
 
     -- Changing the window order
   , ("M-S-m", windows W.swapMaster)
@@ -124,9 +129,7 @@ myXmobarPP = defaultPP { ppCurrent = xmobarColor solarizedBlue "" . wrap "[" "]"
                        , ppUrgent = xmobarColor solarizedRed solarizedBase02
                        }
 
-main = do
-  xmproc <- spawn "taffybar"
-  xmonad . pagerHints . ewmh $ myBaseConfig
+main = xmonad . pagerHints . ewmh $ myBaseConfig
                       { normalBorderColor = myNormalBorderColor
                       , focusedBorderColor = myFocusedBorderColor
                       , layoutHook = myLayoutHook
@@ -139,9 +142,12 @@ main = do
                       , logHook = dynamicLogWithPP myXmobarPP
                                                            { ppTitle = xmobarColor solarizedBase0 solarizedBase03 . shorten 50
                                                            }
+                      , startupHook = startup
                       , focusFollowsMouse = True
                       }
                       `additionalKeysP` myKeys
 
 startup :: X ()
-startup = spawn "xscreensaver -no-splash"
+startup = do
+  spawn "xscreensaver -no-splash"
+  spawn "taffybar"
