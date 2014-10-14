@@ -1,3 +1,6 @@
+import Graphics.X11.Xlib
+import Graphics.X11.Xlib.Extras
+
 import Solarized
 
 import System.IO
@@ -66,6 +69,7 @@ myKeys =
 
    -- Modifying windows
   , ("M-c", kill)
+  , ("M-S-c", withFocused forceKill)
   , ("M-n", refresh)
 
     -- Changing the window order
@@ -119,6 +123,12 @@ myLayoutHook = onWorkspace "4:term" htiled $
                  gridLayout = spacing 8 Grid
                  pidginLayout = withIM (18/100) (Role "buddy_list") gridLayout
 
+forceKill :: Window -> X ()
+forceKill w = withDisplay $ \d -> io $ do
+  killClient d w
+  return ()
+
+myManageHook :: ManageHook
 myManageHook = composeAll
                [ className =? "Pidgin" --> doShift "3:comm"
                ]
