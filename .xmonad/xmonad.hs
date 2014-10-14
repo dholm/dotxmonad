@@ -46,8 +46,8 @@ myKeys =
   [ -- Launching and managing applications
     ("M-S-q", spawn "gnome-session-quit --logout --no-prompt")
   , ("M-S-l", spawn "xscreensaver-command -lock")
-  , ("M-<Space>", spawn "gmrun")
-  , ("M-S-<Space>", spawn "dmenu_run")
+  , ("M-<Space>", spawn "synapse")
+  , ("M-S-<Space>", spawn "gmrun")
   , ("M-s", scratchpadSpawnActionCustom "gnome-terminal --disable-factory --name scratchpad")
   , ("M-q", spawn "killall -9 taffybar-linux-x86_64; xmonad --recompile && xmonad --restart")
   , ("M-<Tab>", goToSelected defaultGSConfig)
