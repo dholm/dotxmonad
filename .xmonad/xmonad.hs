@@ -160,4 +160,6 @@ main = xmonad . pagerHints . ewmh $ myBaseConfig
 startup :: X ()
 startup = do
   spawn "xscreensaver -no-splash"
+  spawn "gnome-settings-daemon"
+  spawn "nm-applet"
   spawn "taffybar"
