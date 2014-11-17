@@ -24,6 +24,7 @@ import XMonad.Layout.IM
 import XMonad.Layout.Mosaic
 import XMonad.Layout.NoBorders
 import XMonad.Layout.PerWorkspace
+import XMonad.Layout.Reflect
 import XMonad.Layout.ResizableTile
 import XMonad.Layout.Spacing
 import XMonad.Layout.ToggleLayouts
@@ -112,8 +113,9 @@ myLayoutHook = onWorkspace "4:term" htiled $
                onWorkspace "3:comm" pidginLayout $
                onWorkspace "8:tsrv" (noBorders Full) $
                avoidStruts $ toggleLayouts (noBorders Full)
-               ( Full ||| tiled ||| mosaic 2 [3,2] ||| Mirror tiled)
+               standardLayouts
                where
+                 standardLayouts = Full ||| tiled ||| mosaic 2 [3,2] ||| Mirror tiled
                  tiled = ResizableTall nmaster delta ratio []
                  htiled = avoidStruts $ Tall hmaster delta ratio
                  hmaster = 8
@@ -121,7 +123,10 @@ myLayoutHook = onWorkspace "4:term" htiled $
                  delta = 2 / 100
                  ratio = 1 / 2
                  gridLayout = spacing 8 Grid
-                 pidginLayout = withIM (18/100) (Role "buddy_list") gridLayout
+                 pidginLayout = avoidStruts $ withIM (18/100) pidginRoster $ reflectHoriz $
+                                withIM (18/100) skypeRoster standardLayouts
+                 pidginRoster = ClassName "Pidgin" `And` Role "buddy_list"
+                 skypeRoster  = ClassName "Skype"  `And` Role "MainWindow"
 
 forceKill :: Window -> X ()
 forceKill w = withDisplay $ \d -> io $ do
