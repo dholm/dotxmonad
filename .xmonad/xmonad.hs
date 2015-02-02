@@ -164,6 +164,7 @@ main = xmonad . pagerHints . ewmh $ myBaseConfig
 
 startup :: X ()
 startup = do
+  spawn "keychain --quiet --quick ${HOME}/.ssh/id_rsa"
   spawn "xscreensaver -no-splash"
   spawn "gnome-settings-daemon"
   spawn "nm-applet"
