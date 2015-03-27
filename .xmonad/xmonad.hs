@@ -53,7 +53,7 @@ myKeys =
   , ("M-<Space>", spawn "synapse")
   , ("M-S-<Space>", spawn "gmrun")
   , ("M-s", scratchpadSpawnActionCustom "gnome-terminal --disable-factory --name scratchpad")
-  , ("M-q", spawn "killall -9 taffybar-linux-x86_64; xmonad --recompile && xmonad --restart")
+  , ("M-r", spawn "killall -9 taffybar-linux-x86_64; xmonad --recompile && xmonad --restart")
   , ("M-<Tab>", goToSelected defaultGSConfig)
 
     -- Modifying the layout
@@ -69,7 +69,7 @@ myKeys =
   , ("M-k", windows W.focusUp)
 
    -- Modifying windows
-  , ("M-c", kill)
+  , ("M-q", kill)
   , ("M-S-c", withFocused forceKill)
   , ("M-n", refresh)
 
