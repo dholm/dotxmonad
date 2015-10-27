@@ -164,4 +164,5 @@ main = xmonad . pagerHints . ewmh $ myBaseConfig
 
 startup :: X ()
 startup = do
+  startupHook gnomeConfig
   spawn "${HOME}/.xmonad/startup-hook.sh"
