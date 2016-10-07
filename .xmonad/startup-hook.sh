@@ -22,3 +22,7 @@ fi
 if [ -z "$(pgrep -u ${USER} taffybar)" ]; then
     taffybar &
 fi
+
+if [ -x "${HOME}/.local/bin/startup-hook.local.sh" ]; then
+    ${HOME}/.local/bin/startup-hook.local.sh
+fi
