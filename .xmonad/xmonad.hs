@@ -48,6 +48,7 @@ myWorkspaces = [ "1:web"
                , "7"
                , "8:tsrv"
                , "9:emacs"
+               , "0:scratch"
                ]
 myNormalBorderColor = solarizedBase01
 myFocusedBorderColor = solarizedRed
@@ -56,18 +57,16 @@ mprisPlay = "dbus-send --print-reply --dest=org.mpris.MediaPlayer2.%s /org/mpris
 mprisPrev = "dbus-send --print-reply --dest=org.mpris.MediaPlayer2.%s /org/mpris/MediaPlayer2 org.mpris.MediaPlayer2.Player.Previous"
 mprisNext = "dbus-send --print-reply --dest=org.mpris.MediaPlayer2.%s /org/mpris/MediaPlayer2 org.mpris.MediaPlayer2.Player.Next"
 
-myKeys =
+myKeys = \conf -> mkKeymap conf $
   [ -- Launching and managing applications
-    ("M-S-q", spawn "gnome-session-quit --logout --no-prompt")
-  , ("M-S-l", spawn "xscreensaver-command -lock")
+    ("M-S-l", spawn "xscreensaver-command -lock")
   , ("M-<Space>", spawn "synapse")
-  , ("M-S-<Space>", spawn "gmrun")
   , ("M-s", scratchpadSpawnActionCustom "gnome-terminal --disable-factory --name scratchpad")
-  , ("M-r", spawn "killall -9 taffybar-linux-x86_64; xmonad --recompile && xmonad --restart")
   , ("M-<Tab>", goToSelected defaultGSConfig)
 
     -- Modifying the layout
   , ("M-S-<Space>", sendMessage NextLayout)
+  , ("M-M1-<Space>", setLayout $ XMonad.layoutHook conf)
   , ("M-t", withFocused $ windows . W.sink)
   , ("M-,", sendMessage (IncMasterN 1))
   , ("M-.", sendMessage (IncMasterN (-1)))
@@ -105,11 +104,19 @@ myKeys =
   , ("<XF86AudioPlay>", spawn (printf mprisPlay "mopidy"))
   , ("<XF86AudioPrev>", spawn (printf mprisPrev "mopidy"))
   , ("<XF86AudioNext>", spawn (printf mprisNext "mopidy"))
+
+    -- Misc non-standard keys
+  , ("<XF86MonBrightnessUp>", spawn "xbacklight -inc 10")
+  , ("<XF86MonBrightnessDown>", spawn "xbacklight -dec 10")
+
+    -- Managing XMonad
+  , ("M-S-r", spawn "killall -9 taffybar-linux-x86_64; xmonad --recompile && xmonad --restart")
+  , ("M-S-q", spawn "gnome-session-quit --logout --no-prompt")
   ]
   ++
   -- Managing workspaces
   [ (mask ++ "M-" ++ [key], windows $ f i)
-    | (i, key) <- zip myWorkspaces ['1' .. '9']
+    | (i, key) <- zip myWorkspaces (['1' .. '9'] ++ ['0'])
     , (f, mask) <- [ (W.greedyView, ""), (W.shift, "S-") ]
   ]
   ++
@@ -166,6 +173,7 @@ main = xmonad . pagerHints . ewmh $ myBaseConfig
                       , layoutHook = myLayoutHook
                       , workspaces = myWorkspaces
                       , modMask = mod4Mask
+                      , keys = myKeys
                       , terminal = myTerminal
                       , handleEventHook = fullscreenEventHook
                       , manageHook = manageDocks <+> myManageHook
@@ -176,7 +184,6 @@ main = xmonad . pagerHints . ewmh $ myBaseConfig
                       , startupHook = startup
                       , focusFollowsMouse = True
                       }
-                      `additionalKeysP` myKeys
 
 startup :: X ()
 startup = do
