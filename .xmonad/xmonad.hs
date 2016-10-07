@@ -18,6 +18,7 @@ import XMonad.Config.Gnome (gnomeConfig)
 import XMonad.Hooks.DynamicLog
 import XMonad.Hooks.EwmhDesktops
 import XMonad.Hooks.ManageDocks
+import XMonad.Hooks.ManageHelpers
 
 import XMonad.Layout.Grid
 import XMonad.Layout.IM
@@ -38,7 +39,16 @@ import XMonad.Util.Scratchpad
 
 myBaseConfig = gnomeConfig
 myTerminal = "gnome-terminal"
-myWorkspaces = [ "1:info", "2:mail", "3:comm", "4:term", "5", "6", "7", "8:tsrv", "9:scratch" ]
+myWorkspaces = [ "1:web"
+               , "2:mail"
+               , "3:comm"
+               , "4:term"
+               , "5"
+               , "6"
+               , "7"
+               , "8:tsrv"
+               , "9:emacs"
+               ]
 myNormalBorderColor = solarizedBase01
 myFocusedBorderColor = solarizedRed
 
@@ -135,7 +145,13 @@ forceKill w = withDisplay $ \d -> io $ do
 
 myManageHook :: ManageHook
 myManageHook = composeAll
-               [ className =? "Pidgin" --> doShift "3:comm"
+               [ isFullscreen --> doFullFloat
+               , isDialog --> doFloat
+               , className =? "sun-awt-X11-XFramePeer" --> doFloat
+               , className =? "Firefox" <&&> fmap not isFullscreen --> doShift "1:web"
+               , className =? "Mail" --> doShift "2:mail"
+               , className =? "Pidgin" --> doShift "3:comm"
+               , className =? "Emacs" --> doShift "9:emacs"
                ]
 
 myXmobarPP = defaultPP { ppCurrent = xmobarColor solarizedBlue "" . wrap "[" "]"
